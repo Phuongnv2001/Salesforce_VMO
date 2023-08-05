@@ -11,6 +11,7 @@ public with sharing class VMO_CaseTriggerHandler {
     if (checkActive == true) {
       checkSubjectUpdate(newList, oldMap);
     }
+    createTicketHandler(newList,oldMap);
    }
    // Handler before Insert functions --
   public static void onBeforeInsert(List<Case> newList) {
@@ -52,4 +53,20 @@ public with sharing class VMO_CaseTriggerHandler {
       }
     }
   }
+  public static void createTicketHandler(List<Case> newCases, Map<Id, Case> oldCaseMap) {
+        List<VMO_TicketHistory__c> ticketHandlers = new List<VMO_TicketHistory__c>();
+        for (Case c : newCases) {
+            Case oldCase = oldCaseMap.get(c.Id);
+            if (c.Status != oldCase.Status || c.OwnerId != oldCase.OwnerId || c.VMO_Answer__c != oldCase.VMO_Answer__c ||c.VMO_TicketHandler__c != oldCase.VMO_TicketHandler__c ) {
+                VMO_TicketHistory__c th = new VMO_TicketHistory__c();
+                th.Field_Name__c = c.SuppliedCompany;
+                th.Old_Value__c = c.Subject;
+                ticketHandlers.add(th);
+            }
+          
+        }
+        if (!ticketHandlers.isEmpty()) {
+            insert ticketHandlers;
+        }
+    }
 }

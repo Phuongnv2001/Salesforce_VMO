@@ -20,4 +20,5 @@ trigger VMO_CaseTrigger on Case(
   if (Trigger.isAfter && Trigger.isInsert) {
     VMO_CaseTriggerHandler.onAfterInsert(Trigger.new);
   }
+  
 }
