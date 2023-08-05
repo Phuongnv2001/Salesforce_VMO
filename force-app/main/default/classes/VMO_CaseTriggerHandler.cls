@@ -109,4 +109,51 @@ public with sharing class VMO_CaseTriggerHandler {
         insert ticketHandlers;
     }
   }
+// cách 2 ngắn gọn hơn khi ta lặp lại code quá nhiều thì cách 2 sẽ giải quyết được việc tối ưu code 
+
+//   private static void createTicketHandler(List<Case> newCases, Map<Id, Case> oldCaseMap){
+//     List<VMO_TicketHistory__c> ticketHandlers = new List<VMO_TicketHistory__c>();
+       
+//        for (Case newCase : newCases) {
+//            Case oldCase = oldCaseMap.get(newCase.Id);
+           
+//            if (newCase.Status != oldCase.Status) {
+//                createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Status', newCase.Status, oldCase.Status);
+//            }
+           
+//            if (newCase.OwnerId != oldCase.OwnerId) {
+//                createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Owner Id', newCase.OwnerId, oldCase.OwnerId);
+//            }
+           
+//            if (newCase.VMO_Answer__c != oldCase.VMO_Answer__c) {
+//                createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Answer', newCase.VMO_Answer__c, oldCase.VMO_Answer__c);
+//            }
+           
+//            if (newCase.VMO_TicketHandler__c != oldCase.VMO_TicketHandler__c) {
+//                createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Ticket Handler', newCase.VMO_TicketHandler__c, oldCase.VMO_TicketHandler__c);
+//            }
+//        }
+       
+//        if (!ticketHandlers.isEmpty()) {
+//            insert ticketHandlers;
+//        }
+//  }
+// private static void createTicketHistoryRecord(
+//        List<VMO_TicketHistory__c> ticketHandlers,
+//        Case currentCase,
+//        Case oldCase,
+//        String fieldName,
+//        Object newValue,
+//        Object oldValue
+//    ) {
+//        VMO_TicketHistory__c ticketHistory = new VMO_TicketHistory__c();
+//        ticketHistory.Field_Name__c = fieldName;
+//        ticketHistory.New_Value__c = String.valueOf(newValue);
+//        ticketHistory.Old_Value__c = String.valueOf(oldValue);
+//        ticketHistory.VMO_ChangedTime__c = DateTime.now();
+//        ticketHistory.VMO_RelatedTicke__c = currentCase.Id;
+//        ticketHistory.VMO_ChangedUser__c = currentCase.LastModifiedById;
+       
+//        ticketHandlers.add(ticketHistory);
+//    }    
 }
