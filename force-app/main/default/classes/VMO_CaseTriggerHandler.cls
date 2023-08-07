@@ -11,8 +11,10 @@ public with sharing class VMO_CaseTriggerHandler {
     if (checkActive == true) {
       checkSubjectUpdate(newList, oldMap);
     }
-    createTicketHandler(newList,oldMap);
    }
+   public static void onAfterUpdate(List<Case> newList, Map<Id,Case> oldMap){
+    createTicketHandler(newList,oldMap);
+	} 
    // Handler before Insert functions --
   public static void onBeforeInsert(List<Case> newList) {
    checkSubject(newList);
@@ -53,107 +55,63 @@ public with sharing class VMO_CaseTriggerHandler {
       }
     }
   }
-  // tạo bản ghi ở TicketHandler khi update case 
   private static void createTicketHandler(List<Case> newCases, Map<Id, Case> oldCaseMap){
     List<VMO_TicketHistory__c> ticketHandlers = new List<VMO_TicketHistory__c>();
-    for (Case c : newCases){
-      Case oldCase = oldCaseMap.get(c.Id);
-      // nếu thay đổi Status thì sẽ add một bản ghi của Status vào list ticketHandlers
-      if (c.Status != oldCase.Status){
-        VMO_TicketHistory__c th = new VMO_TicketHistory__c();
-        th.Field_Name__c = 'Status';
-        th.New_Value__c = c.Status;
-        th.Old_Value__c = oldCaseMap.get(c.Id).Status;
-        th.VMO_ChangedTime__c = DateTime.now();
-        th.VMO_RelatedTicke__c = c.Id;
-        th.VMO_ChangedUser__c = c.LastModifiedById;
-        ticketHandlers.add(th);
-      }
-      // nếu thay đổi OwnerId thì sẽ add một bản ghi của OwnerId vào list ticketHandlers
-       if (c.OwnerId != oldCase.OwnerId){
-        VMO_TicketHistory__c th = new VMO_TicketHistory__c();
-        th.Field_Name__c = 'Owner Id';
-        th.New_Value__c = c.Status;
-        th.Old_Value__c = oldCaseMap.get(c.Id).Status;
-        th.VMO_ChangedTime__c = DateTime.now();
-        th.VMO_RelatedTicke__c = c.Id;
-        th.VMO_ChangedUser__c = c.LastModifiedById;
-        ticketHandlers.add(th);
-      }
-       // nếu thay đổi Answer thì sẽ add một bản ghi của Answer vào list ticketHandlers
-     if (c.VMO_Answer__c != oldCase.VMO_Answer__c){
-        VMO_TicketHistory__c th = new VMO_TicketHistory__c();
-        th.Field_Name__c = 'Answer';
-        th.New_Value__c = c.Status;
-        th.Old_Value__c = oldCaseMap.get(c.Id).Status;
-        th.VMO_ChangedTime__c = DateTime.now();
-        th.VMO_RelatedTicke__c = c.Id;
-        th.VMO_ChangedUser__c = c.LastModifiedById;
-        ticketHandlers.add(th);
-      }
-      // nếu thay đổi TicketHandler thì sẽ add một bản ghi của TicketHandler vào list ticketHandlers
-      if (c.VMO_TicketHandler__c != oldCase.VMO_TicketHandler__c){
-        VMO_TicketHistory__c th = new VMO_TicketHistory__c();
-        th.Field_Name__c = 'Ticket Handler';
-        th.New_Value__c = c.Status;
-        th.Old_Value__c = oldCaseMap.get(c.Id).Status;
-        th.VMO_ChangedTime__c = DateTime.now();
-        th.VMO_RelatedTicke__c = c.Id;
-        th.VMO_ChangedUser__c = c.LastModifiedById;
-        ticketHandlers.add(th);
-      }
-    }
-    //nếu ticketHandlers mà bằng null thì sẽ không tạo ra bản ghi nào còn nếu khác null sẽ tạo ra bản ghi mới 
-      if (!ticketHandlers.isEmpty()) {
-        // tạo mới bản ghi có trong list ticketHandlers và lưu vào database 
-        insert ticketHandlers;
-    }
-  }
-// cách 2 ngắn gọn hơn khi ta lặp lại code quá nhiều thì cách 2 sẽ giải quyết được việc tối ưu code 
-
-//   private static void createTicketHandler(List<Case> newCases, Map<Id, Case> oldCaseMap){
-//     List<VMO_TicketHistory__c> ticketHandlers = new List<VMO_TicketHistory__c>();
+    List<Case> casesToUpdate = new List<Case>();
+    List<String> all = new List<String>();
+    for (Case newCase : newCases) {
+    Case oldCase = oldCaseMap.get(newCase.Id);
+    all.add(oldCase.VMO_TicketHandler__c);
+    all.add(newCase.VMO_TicketHandler__c);
+	}
+      
+    List<User> users = [SELECT Id, Name FROM User WHERE Id IN :all];
+       for (Case newCase : newCases) {
+           Case oldCase = oldCaseMap.get(newCase.Id);
+           if (newCase.Status != oldCase.Status) {
+               createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Status', newCase.Status, oldCase.Status);
+           }
+           if (newCase.OwnerId != oldCase.OwnerId) {
+               createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Owner Id', newCase.OwnerId, oldCase.OwnerId);
+           }
+           if (newCase.VMO_Answer__c != oldCase.VMO_Answer__c) {
+               createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Answer', newCase.VMO_Answer__c, oldCase.VMO_Answer__c);
+           }
+            Map<Id, User> userMap = new Map<Id, User>();
+           for (User u : users) {
+              userMap.put(u.Id, u);
+           if (newCase != null && oldCase != null) {
+  		  if (newCase.VMO_TicketHandler__c != oldCase.VMO_TicketHandler__c) {
+      	  User newTicketHandler = userMap.get(newCase.VMO_TicketHandler__c);
+        	User oldTicketHandler = userMap.get(oldCase.VMO_TicketHandler__c);
+        if (newTicketHandler != null && oldTicketHandler != null) {
+            createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Ticket Handler', newTicketHandler.Name, oldTicketHandler.Name);
+        }
+}
+}
+}
+} 
+       if (!ticketHandlers.isEmpty()) {
+           insert ticketHandlers;
+       }
+ }
+  private static void createTicketHistoryRecord(
+       List<VMO_TicketHistory__c> ticketHandlers,
+       Case currentCase,
+       Case oldCase,
+       String fieldName,
+       Object newValue,
+       Object oldValue
+   ) {
+       VMO_TicketHistory__c ticketHistory = new VMO_TicketHistory__c();
+       ticketHistory.Field_Name__c = fieldName;
+       ticketHistory.New_Value__c = String.valueOf(newValue);
+       ticketHistory.Old_Value__c = String.valueOf(oldValue);
+       ticketHistory.VMO_ChangedTime__c = DateTime.now();
+       ticketHistory.VMO_RelatedTicke__c = currentCase.Id;
+       ticketHistory.VMO_ChangedUser__c = currentCase.LastModifiedById;
        
-//        for (Case newCase : newCases) {
-//            Case oldCase = oldCaseMap.get(newCase.Id);
-           
-//            if (newCase.Status != oldCase.Status) {
-//                createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Status', newCase.Status, oldCase.Status);
-//            }
-           
-//            if (newCase.OwnerId != oldCase.OwnerId) {
-//                createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Owner Id', newCase.OwnerId, oldCase.OwnerId);
-//            }
-           
-//            if (newCase.VMO_Answer__c != oldCase.VMO_Answer__c) {
-//                createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Answer', newCase.VMO_Answer__c, oldCase.VMO_Answer__c);
-//            }
-           
-//            if (newCase.VMO_TicketHandler__c != oldCase.VMO_TicketHandler__c) {
-//                createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Ticket Handler', newCase.VMO_TicketHandler__c, oldCase.VMO_TicketHandler__c);
-//            }
-//        }
+       ticketHandlers.add(ticketHistory);
        
-//        if (!ticketHandlers.isEmpty()) {
-//            insert ticketHandlers;
-//        }
-//  }
-// private static void createTicketHistoryRecord(
-//        List<VMO_TicketHistory__c> ticketHandlers,
-//        Case currentCase,
-//        Case oldCase,
-//        String fieldName,
-//        Object newValue,
-//        Object oldValue
-//    ) {
-//        VMO_TicketHistory__c ticketHistory = new VMO_TicketHistory__c();
-//        ticketHistory.Field_Name__c = fieldName;
-//        ticketHistory.New_Value__c = String.valueOf(newValue);
-//        ticketHistory.Old_Value__c = String.valueOf(oldValue);
-//        ticketHistory.VMO_ChangedTime__c = DateTime.now();
-//        ticketHistory.VMO_RelatedTicke__c = currentCase.Id;
-//        ticketHistory.VMO_ChangedUser__c = currentCase.LastModifiedById;
-       
-//        ticketHandlers.add(ticketHistory);
-//    }    
+   }        
 }
