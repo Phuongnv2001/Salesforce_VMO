@@ -61,8 +61,11 @@ public with sharing class VMO_CaseTriggerHandler {
     List<String> all = new List<String>();
     for (Case newCase : newCases) {
     Case oldCase = oldCaseMap.get(newCase.Id);
-    all.add(oldCase.VMO_TicketHandler__c);
-    all.add(newCase.VMO_TicketHandler__c);
+    if (newCase.VMO_TicketHandler__c != oldCase.VMO_TicketHandler__c) {
+      all.add(oldCase.VMO_TicketHandler__c);
+      all.add(newCase.VMO_TicketHandler__c);
+    }
+   
 	}
       
     List<User> users = [SELECT Id, Name FROM User WHERE Id IN :all];
@@ -80,21 +83,25 @@ public with sharing class VMO_CaseTriggerHandler {
             Map<Id, User> userMap = new Map<Id, User>();
            for (User u : users) {
               userMap.put(u.Id, u);
+               System.debug('test' +userMap.put(u.Id, u));
+           }
            if (newCase != null && oldCase != null) {
+               System.debug('test case old new '+newCase + oldCase);
   		  if (newCase.VMO_TicketHandler__c != oldCase.VMO_TicketHandler__c) {
+              System.debug('test case ticket'+newCase.VMO_TicketHandler__c);
       	  User newTicketHandler = userMap.get(newCase.VMO_TicketHandler__c);
         	User oldTicketHandler = userMap.get(oldCase.VMO_TicketHandler__c);
-        if (newTicketHandler != null && oldTicketHandler != null) {
-            createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Ticket Handler', newTicketHandler.Name, oldTicketHandler.Name);
+       
+            createTicketHistoryRecord(ticketHandlers, newCase, oldCase, 'Ticket Handler', newTicketHandler?.Name, oldTicketHandler?.Name);
+        
+           }
+
+         }
         }
-}
-}
-}
-} 
        if (!ticketHandlers.isEmpty()) {
            insert ticketHandlers;
-       }
- }
+      }
+    }
   private static void createTicketHistoryRecord(
        List<VMO_TicketHistory__c> ticketHandlers,
        Case currentCase,
