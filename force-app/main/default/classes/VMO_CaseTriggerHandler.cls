@@ -5,6 +5,39 @@
  * PIC: PhuongNV
  */
 public with sharing class VMO_CaseTriggerHandler {
+
+  @AuraEnabled(cacheable=true)
+    public static Integer TotalTickets() {
+        return [SELECT COUNT() FROM Case];
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static Integer TotalThisMonth() {
+        Date thisMonthStart = Date.today().toStartOfMonth();
+        Date thisMonthEnd = Date.today();
+        return [SELECT COUNT() FROM Case WHERE CreatedDate >= :thisMonthStart AND CreatedDate <= :thisMonthEnd];
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static Integer TotalOpen() {
+        return [SELECT COUNT() FROM Case WHERE Status = 'New'];
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static Integer TotalProcessing() {
+        return [SELECT COUNT() FROM Case WHERE Status != 'New' AND IsClosed = false];
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static Integer TotalClosed() {
+        return [SELECT COUNT() FROM Case WHERE IsClosed = true];
+    }
+
+
+
+
+
+
   private static Boolean checkActive = true;
    // Handler before Update functions --
   public static void onBeforeUpdate(List<Case> newList, Map<Id, Case> oldMap) {
