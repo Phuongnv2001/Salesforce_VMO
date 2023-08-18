@@ -5,33 +5,6 @@
  * PIC: PhuongNV
  */
 public with sharing class VMO_CaseTriggerHandler {
-  VMO_CaseDao caseDao = new VMO_CaseDao();
-
-    @AuraEnabled(cacheable=true)
-    public Integer getTotalTickets() {
-        return VMO_CaseDao.TotalTickets();
-    }
-
-    @AuraEnabled(cacheable=true)
-    public Integer getTotalThisMonth() {
-        return VMO_CaseDao.TotalThisMonth();
-    }
-
-    @AuraEnabled(cacheable=true)
-    public Integer getTotalOpen() {
-        return VMO_CaseDao.TotalOpen();
-    }
-
-    @AuraEnabled(cacheable=true)
-    public Integer getTotalProcessing() {
-        return VMO_CaseDao.TotalProcessing();
-    }
-
-    @AuraEnabled(cacheable=true)
-    public Integer getTotalClosed() {
-        return VMO_CaseDao.TotalClosed();
-    }
-    
   private static Boolean checkActive = true;
    // Handler before Update functions --
   public static void onBeforeUpdate(List<Case> newList, Map<Id, Case> oldMap) {

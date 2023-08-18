@@ -27,4 +27,8 @@ public with sharing class VMO_SummaryCaseTriggerHandler {
     public static Integer getTotalClosed() {
         return VMO_CaseDao.TotalClosedCases();
     }
+     @AuraEnabled(cacheable=true)
+    public static List<User> getUsersWithInfotoDao() {
+        return VMO_UserInformationDAO.GetUsersWithInfo();
+    }
 }

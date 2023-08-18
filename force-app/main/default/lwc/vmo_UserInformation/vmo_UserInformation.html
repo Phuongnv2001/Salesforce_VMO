@@ -1,0 +1,73 @@
+<template>
+    <div class="wrapper">
+      <div class="header">
+        <div class="header-right">
+          <h1>{userName}</h1>
+          <p>Salesforce Technical Leader</p>
+        </div>
+        <div class="header-left">
+          <div class="circle-image">
+            <img src={userFullPhotoUrl} alt="Hình ảnh tròn">
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div class="main-content">
+        <div class="main-content-right">
+          <div class="labels">
+            <div>Mã nhân viên:</div>
+            <div>Email:</div>
+            <div>Ngày sinh:</div>
+          </div>
+          <div class="inputs">
+            <input type="text" value={employeeCode} data-value={employeeCode}>
+            <input type="text" value={userEmail} data-value={userEmail}>
+            <input type="text" value={userDateOfBirth} data-value={userDateOfBirth}>
+        </div>
+        </div>
+        <div class="main-content-left">
+          <div class="input-container">
+            <div>Subject</div>
+            <input class="distance" type="text" onchange={handleSubjectChange}>
+          </div>
+          <div class="input-container">
+            <div>Ticket Type</div>
+            <select class="distance" onchange={handleTicketTypeChange}>
+              <option value="apple">Táo</option>
+              <option value="banana">Chuối</option>
+              <option value="orange">Cam</option>
+            </select>
+          </div>
+          <div class="input-container">
+            <div>Status</div>
+            <select class="distance" onchange={handleStatusChange}>
+              <option value="apple">Táo</option>
+              <option value="banana">Chuối</option>
+              <option value="orange">Cam</option>
+            </select>
+          </div>
+          <div class="input-container">
+            <div>Category</div>
+            <select class="distance" onchange={handleCategoryChange}>
+              <option value="apple">Táo</option>
+              <option value="banana">Chuối</option>
+              <option value="orange">Cam</option>
+            </select>
+          </div>
+          <div class="input-container">
+            <div>Start Date</div>
+            <input class="distance" type="date" id="date" name="date" onchange={handleStartDateChange}>
+          </div>
+          <div class="input-container">
+            <div>End Date</div>
+            <input class="distance" type="date" id="date1" name="date" onchange={handleEndDateChange}>
+          </div>
+          <div></div>
+          <div class="search-button right-align">
+            <button onclick={handleSearchClick}>Search</button>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+</template>
