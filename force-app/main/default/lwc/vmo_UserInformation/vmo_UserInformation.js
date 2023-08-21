@@ -1,6 +1,9 @@
 import { LightningElement, wire } from 'lwc';
 import getUsersWithInfotoDao from "@salesforce/apex/VMO_UserInformationController.getUsersWithInfotoDao";
 import logFieldChanges from "@salesforce/apex/VMO_UserInformationController.logFieldChanges";
+import getTicketTypeOptions from "@salesforce/apex/VMO_UserInformationController.getTicketTypeOptions";
+import getCategoryOptions from "@salesforce/apex/VMO_UserInformationController.getCategoryOptions";
+import getStatusOptions from "@salesforce/apex/VMO_UserInformationController.getStatusOptions";
 
 export default class Vmo_UserInformation extends LightningElement {
     userWithInfo = {};
@@ -10,8 +13,14 @@ export default class Vmo_UserInformation extends LightningElement {
     categoryValue = '';
     startDateValue = '';
     endDateValue = '';
+    ticketTypeOptions = [];
+    categoryOptions = [];
+    statusOptions = [];
     connectedCallback() {
         this.fetchUserWithInfo();
+        this.fetchTicketTypeOptions();
+        this.fetchCategoryOptions();
+        this.fetchStatusOptions();
     }
      
     async fetchUserWithInfo() {
@@ -26,7 +35,29 @@ export default class Vmo_UserInformation extends LightningElement {
             console.error('An error occurred:', error);
         }
     }
+    async fetchTicketTypeOptions() {
+        try {
+            this.ticketTypeOptions = await getTicketTypeOptions();
+        } catch (error) {
+            console.error('Error loading ticket type options:', error);
+        }
+    }
 
+    async fetchCategoryOptions() {
+        try {
+            this.categoryOptions = await getCategoryOptions();
+        } catch (error) {
+            console.error('Error loading category options:', error);
+        }
+    }
+
+    async fetchStatusOptions() {
+        try {
+            this.statusOptions = await getStatusOptions();
+        } catch (error) {
+            console.error('Error loading status options:', error);
+        }
+    }
     get employeeCode() {
         return this.userWithInfo.employee_code__c || '';
     }

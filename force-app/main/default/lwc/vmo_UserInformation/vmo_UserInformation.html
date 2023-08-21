@@ -33,26 +33,26 @@
           <div class="input-container">
             <div>Ticket Type</div>
             <select class="distance" onchange={handleTicketTypeChange}>
-              <option value="apple">Táo</option>
-              <option value="banana">Chuối</option>
-              <option value="orange">Cam</option>
-            </select>
+              <template for:each={ticketTypeOptions} for:item="option">
+                  <option key={option} value={option}>{option}</option>
+              </template>
+          </select>
           </div>
           <div class="input-container">
             <div>Status</div>
             <select class="distance" onchange={handleStatusChange}>
-              <option value="apple">Táo</option>
-              <option value="banana">Chuối</option>
-              <option value="orange">Cam</option>
-            </select>
+              <template for:each={statusOptions} for:item="option">
+                  <option key={option} value={option}>{option}</option>
+              </template>
+          </select>
           </div>
           <div class="input-container">
             <div>Category</div>
             <select class="distance" onchange={handleCategoryChange}>
-              <option value="apple">Táo</option>
-              <option value="banana">Chuối</option>
-              <option value="orange">Cam</option>
-            </select>
+              <template for:each={categoryOptions} for:item="option">
+                  <option key={option} value={option}>{option}</option>
+              </template>
+          </select>
           </div>
           <div class="input-container">
             <div>Start Date</div>

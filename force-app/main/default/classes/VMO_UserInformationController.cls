@@ -6,7 +6,7 @@ public with sharing class VMO_UserInformationController {
     public static List<User> getUsersWithInfotoDao() {
         return VMO_UserInformationDAO.GetUsersWithInfo();
     }
-        @AuraEnabled
+    @AuraEnabled
     public static String logFieldChanges(String subject, String ticketType, String status, String category, String startDate, String endDate) {
         try {
             // Thực hiện việc ghi log, ví dụ như insert vào đối tượng Log_Field_Changes__c
@@ -21,5 +21,18 @@ public with sharing class VMO_UserInformationController {
         } catch (Exception ex) {
             return 'Error logging field changes: ' + ex.getMessage();
         }
+    }
+    @AuraEnabled(cacheable=true)
+    public static List<String> getTicketTypeOptions() {
+        return VMO_UserInformationDAO.getTicketTypeOptions();
+    }
+    @AuraEnabled(cacheable=true)
+    public static List<String> getCategoryOptions() {
+        return VMO_UserInformationDAO.getCategoryOptions();
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static List<String> getStatusOptions() {
+        return VMO_UserInformationDAO.getStatusOptions();
     }
 }
